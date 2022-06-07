@@ -20,6 +20,7 @@ import {
   useToast,
   Heading,
 } from "@chakra-ui/react";
+import locationArr from "../data/locationArr";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -27,9 +28,6 @@ export default function Home() {
   const [countryOne, setCountryOne] = useState("Loading");
   const [countryTwo, setCountryTwo] = useState("Loading");
   const [countryThree, setCountryThree] = useState("Loading");
-  // const [numOne, setNumOne] = useState(0);
-  // const [numTwo, setNumTwo] = useState(0);
-  // const [numThree, setNumThree] = useState(0);
   const [correctNum, setCorrectNum] = useState(0);
   const [balance, setBalance] = useState(20);
 
@@ -40,34 +38,14 @@ export default function Home() {
     randomNumThree,
     randomCorrectNum = 0;
 
-  let locationArr = [
-    {
-      country: "Spain",
-      image:
-        "https://farm66.static.flickr.com/65535/51266741084_782f378023.jpg",
-    },
-    {
-      country: "India",
-      image:
-        "https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1634005083664-f06a3bbc9416",
-    },
-    {
-      country: "U.S.",
-      image:
-        "https://images.discerningassets.com/image/upload/c_limit,h_500,w_500/v1586445396/Grand_Canyon_at_Dusk_Hopi_Point_mqlnkr.jpg",
-    },
-  ];
-
   function randomNumGenerator() {
     randomNumOne = Math.floor(Math.random() * Object.keys(locationArr).length);
-    //setNumOne(randomNumOne);
 
     randomNumTwo = Math.floor(Math.random() * Object.keys(locationArr).length);
     while (randomNumTwo === randomNumOne)
       randomNumTwo = Math.floor(
         Math.random() * Object.keys(locationArr).length
       );
-    //setNumTwo(randomNumTwo);
 
     randomNumThree = Math.floor(
       Math.random() * Object.keys(locationArr).length
@@ -76,7 +54,6 @@ export default function Home() {
       randomNumThree = Math.floor(
         Math.random() * Object.keys(locationArr).length
       );
-    //setNumThree(randomNumThree);
 
     randomCorrectNum = Math.floor(Math.random() * 3);
     setCorrectNum(randomCorrectNum);
@@ -100,8 +77,7 @@ export default function Home() {
       setBalance(balance + 10);
       randomNumGenerator();
       toast({
-        title: "Correct!",
-        description: "Correct answer, take $10",
+        title: "+$10 🎉",
         status: "success",
         duration: 800,
         isClosable: true,
@@ -110,8 +86,7 @@ export default function Home() {
       setBalance(balance - 10);
       randomNumGenerator();
       toast({
-        title: "Wrong :(",
-        description: "Wrong answer, you loose $10",
+        title: "-$10 😔",
         status: "error",
         duration: 800,
         isClosable: true,
@@ -119,8 +94,68 @@ export default function Home() {
     }
   }
 
-  if (balance < 0) return <div>Game Over !!</div>;
-  if (balance >= 100) return <div>You Won !!</div>;
+  if (balance < 0)
+    return (
+      <Flex
+        minH="100vh"
+        backgroundColor="gray.100"
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+      >
+        <Flex
+          backgroundColor="red.500"
+          p={12}
+          borderRadius={20}
+          boxShadow="base"
+        >
+          <Text fontWeight="600" fontSize={26} color="white">
+            Defeat 😔
+          </Text>
+        </Flex>
+        <Button
+          onClick={(e) => {
+            window.location.reload();
+          }}
+          mt={2}
+          colorScheme="green"
+        >
+          ♻️ Try Again
+        </Button>
+      </Flex>
+    );
+
+  if (balance >= 50)
+    return (
+      <Flex
+        minH="100vh"
+        backgroundColor="gray.100"
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+      >
+        <Flex
+          backgroundColor="yellow.400"
+          p={12}
+          borderRadius={20}
+          boxShadow="base"
+        >
+          <Text fontWeight="600" fontSize={26}>
+            🎉 VICTORY! 🎉
+          </Text>
+        </Flex>
+        <Button
+          onClick={(e) => {
+            window.location.reload();
+          }}
+          mt={2}
+          colorScheme="green"
+        >
+          ♻️ Go Again
+        </Button>
+      </Flex>
+    );
+
   return (
     <>
       <Head>
@@ -132,21 +167,46 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Flex minH="100vh" justifyContent="center">
+      <Flex minH="100vh" backgroundColor="gray.100" justifyContent="center">
         <Flex direction="column" w="80%" p={2} alignItems="center">
-          <Heading mt={2}>🗺️ Country Quiz</Heading>
+          <Heading mt={2} color="purple.500">
+            🗺️ Country Quiz
+          </Heading>
 
-          <Text mt={2} display={gameStarted ? "none" : ""}>
-            Gamble $10. Guess the country.
+          <Text
+            mt={2}
+            color="gray.800"
+            fontWeight="700"
+            fontSize={18}
+            display={gameStarted ? "none" : ""}
+          >
+            You start with 💰20.
           </Text>
 
-          <Text display={gameStarted ? "none" : ""}>
-            Win $100 or go broke trying..
+          <Text
+            color="gray.800"
+            fontWeight="700"
+            fontSize={18}
+            display={gameStarted ? "none" : ""}
+          >
+            Gamble 💰10. Guess the country.
+          </Text>
+
+          <Text
+            color="gray.800"
+            fontWeight="700"
+            fontSize={18}
+            display={gameStarted ? "none" : ""}
+          >
+            Win 💰50 or go broke trying..
           </Text>
 
           <Flex mt={2}>
             <Input
               disabled={gameStarted}
+              backgroundColor="white"
+              border="4px"
+              borderColor="gray.200"
               placeholder="Enter your name"
               onChange={(e) => setName(e.target.value)}
             ></Input>
@@ -161,26 +221,56 @@ export default function Home() {
             </Button>
           </Flex>
 
-          <Text hidden={!gameStarted}>{`${name}'s balance: $${balance}`}</Text>
+          <Text
+            mt={2}
+            fontWeight="700"
+            fontSize={16}
+            hidden={!gameStarted}
+          >{`Hello ${name}!`}</Text>
 
-          <Flex mt={5} display={!gameStarted ? "none" : ""}>
-            <Text>Guess the country:</Text>
+          <Flex mt={2} display={!gameStarted ? "none" : ""}>
+            <Flex justify="space-between">
+              <Text fontWeight="600" fontSize={20} color="purple.500">
+                Guess the country:
+              </Text>{" "}
+              <Text
+                fontWeight="600"
+                fontSize={20}
+                hidden={!gameStarted}
+                color="purple.500"
+              >{`💰${balance}`}</Text>
+            </Flex>
+
             <Image
               mt={2}
+              border="4px"
+              borderColor="white"
+              boxShadow="base"
               src={locationArr[correctNum].image}
               alt="guess"
               maxWidth="100%"
               maxHeight="700px"
             ></Image>
-
             <Flex mt={2} justifyContent="space-around">
-              <Button onClick={(e) => judgeAnswer(countryOne)}>
+              <Button
+                colorScheme="blue"
+                boxShadow="base"
+                onClick={(e) => judgeAnswer(countryOne)}
+              >
                 {countryOne}
               </Button>
-              <Button onClick={(e) => judgeAnswer(countryTwo)}>
+              <Button
+                colorScheme="red"
+                boxShadow="base"
+                onClick={(e) => judgeAnswer(countryTwo)}
+              >
                 {countryTwo}
               </Button>
-              <Button onClick={(e) => judgeAnswer(countryThree)}>
+              <Button
+                colorScheme="green"
+                boxShadow="base"
+                onClick={(e) => judgeAnswer(countryThree)}
+              >
                 {countryThree}
               </Button>
             </Flex>
